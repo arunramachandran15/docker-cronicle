@@ -12,7 +12,7 @@ ENV        CRONICLE_socker_io_transports '["polling", "websocket"]'
 
 WORKDIR    /opt/cronicle/
 
-RUN        apk add --no-cache git curl wget perl bash perl-pathtools tar procps
+RUN        apk add --update curl && rm -rf /var/cache/apk/*
 
 RUN        curl -s https://raw.githubusercontent.com/jhuckaby/Cronicle/master/bin/install.js | node
 

@@ -1,39 +1,44 @@
 #!/bin/bash
-
 ROOT_DIR=/opt/cronicle
 CONF_DIR=$ROOT_DIR/conf
 BIN_DIR=$ROOT_DIR/bin
 LIB_DIR=$ROOT_DIR/lib
-# DATA_DIR needs to be the same as the exposed Docker volume in Dockerfile
 DATA_DIR=$ROOT_DIR/data
-# PLUGINS_DIR needs to be the same as the exposed Docker volume in Dockerfile
 PLUGINS_DIR=$ROOT_DIR/plugins
 
-# The env variables below are needed for Docker and cannot be overwritten
+rm -r $PLUGINS_DIR
+rm -r /opt/cronicle/logs
 export CRONICLE_Storage__Filesystem__base_dir=${DATA_DIR}
-export NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 export CRONICLE_echo=1
 export CRONICLE_foreground=1
-
-# Only run setup when setup needs to be done
+npm install aws-sdk
 if [ ! -f $DATA_DIR/.setup_done ]
 then
-  $BIN_DIR/control.sh setup
-
+  npm install aws-sdk
+  
   cp $CONF_DIR/config.json $CONF_DIR/config.json.origin
-
   if [ -f $DATA_DIR/config.json.import ]
   then
-    # Move in custom configuration
     cp $DATA_DIR/config.json.import $CONF_DIR/config.json
   fi
 
-  # Create plugins directory
+  cp $ROOT_DIR/package.json $ROOT_DIR/package.json.origin
+  if [ -f $DATA_DIR/package.json.import ]
+  then
+    cp $DATA_DIR/package.json.import $ROOT_DIR/package.json
+  fi
+  if [ ! -f $DATA_DIR/slave.json ]
+  then
+    touch slave.json
+    $BIN_DIR/control.sh setup
+  fi
+  cp $CONF_DIR/config.json $CONF_DIR/config.json.origin
+  if [ -f $DATA_DIR/config.json.import ]
+  then
+    cp $DATA_DIR/config.json.import $CONF_DIR/config.json
+  fi
+  npm install aws-sdk
   mkdir -p $PLUGINS_DIR
-
-  # Marking setup done
-  touch $DATA_DIR/.setup_done
 fi
 
-# Run cronicle
 /usr/local/bin/node "$LIB_DIR/main.js"

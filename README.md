@@ -1,7 +1,7 @@
 # docker-cronicle
 [![Build status](https://img.shields.io/docker/build/intelliops/cronicle.svg)](https://hub.docker.com/r/intelliops/cronicle) [![Build status](https://img.shields.io/travis/belsander/docker-cronicle/master.svg)](https://travis-ci.org/belsander/docker-cronicle)
 
-Docker container for a Cronicle single-server master node
+Docker stack/container for a Cronicle multi-server master/slave cluster
 
 # Supported tags
 
@@ -20,23 +20,16 @@ Let's Encrypt certificate. If this is not needed, just use the tag `latest`.
 
 ## Install
 ```sh
-docker pull intelliops/cronicle:latest
+docker pull arun15/cronicle_multi_server:latest
 ```
 
 ## Running
 ```sh
-docker run --name cronicle --hostname localhost -p 3012:3012 intelliops/cronicle:latest
+docker compose up --build
+docker stack deploy --compose-file docker-stack.yml cronicle_stack
 ```
 
-Alternatively with persistent data and logs:
-```sh
-docker run --name cronicle \
-  -v /path-to-cronicle-storage/data:/opt/cronicle/data:rw \
-  -v /path-to-cronicle-storage/logs:/opt/cronicle/logs:rw \
-  --hostname localhost -p 3012:3012 intelliops/cronicle:latest
-```
-
-The web UI will be available at: http://localhost:3012
+The web UI will be available at: http://localhost:3012 in native docker //docker-machine default node_ip:3012 / 3112:
 
 > NOTE: please replace the hostname `localhost`, this is only for testing
 > purposes! If you rename the hostname also consider setting the environmental

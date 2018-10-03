@@ -1,4 +1,4 @@
-version: '3'
+version: "3.1"
 services:
   master:
     container_name:
@@ -8,7 +8,6 @@ services:
     ports:
       - "3012:3012"
     build: 
-      context: .
       args : 
         master: "true"
     image : "arun15/cronicle_multi_server"
@@ -16,6 +15,19 @@ services:
       - /cronicle/data:/opt/cronicle/data:rw
       - /cronicle/logs:/opt/cronicle/logs:rw
       - /cronicle/plugins:/opt/cronicle/plugins:rw
+    networks:
+      - cronicle  
+    deploy:
+      mode: replicated
+      replicas: 2
+      labels: [APP=Master_label]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
   slave:
     hostname:
       slave_node_1
@@ -24,11 +36,30 @@ services:
     ports:
       - "3112:3012"
     build: 
-      context: .
       args : 
-        master: "true"
+        master: "false"
     image: "arun15/cronicle_multi_server"
     volumes:
       - /cronicle/data:/opt/cronicle/data:rw
       - /cronicle/slave_data/logs:/opt/cronicle/logs:rw
       - /cronicle/slave_data/plugins:/opt/cronicle/plugins:rw
+    networks:
+      - cronicle  
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels: [APP=Slave_label]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+networks:
+  cronicle:
+
+volumes:
+  data:
+  logs:
+  plugins:
+   

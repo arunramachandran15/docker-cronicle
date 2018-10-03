@@ -12,32 +12,31 @@ export CRONICLE_Storage__Filesystem__base_dir=${DATA_DIR}
 export CRONICLE_echo=1
 export CRONICLE_foreground=1
 npm install aws-sdk
+
+if [ $1 == true ]
+then
+  touch $1
+fi
+
 if [ ! -f $DATA_DIR/.setup_done ]
 then
   npm install aws-sdk
-  
   cp $CONF_DIR/config.json $CONF_DIR/config.json.origin
   if [ -f $DATA_DIR/config.json.import ]
   then
     cp $DATA_DIR/config.json.import $CONF_DIR/config.json
   fi
 
-  cp $ROOT_DIR/package.json $ROOT_DIR/package.json.origin
-  if [ -f $DATA_DIR/package.json.import ]
+  if [ $1 == true ]
   then
-    cp $DATA_DIR/package.json.import $ROOT_DIR/package.json
-  fi
-  if [ ! -f $DATA_DIR/slave.json ]
-  then
-    touch slave.json
     $BIN_DIR/control.sh setup
   fi
+
   cp $CONF_DIR/config.json $CONF_DIR/config.json.origin
   if [ -f $DATA_DIR/config.json.import ]
   then
     cp $DATA_DIR/config.json.import $CONF_DIR/config.json
   fi
-  npm install aws-sdk
   mkdir -p $PLUGINS_DIR
 fi
 

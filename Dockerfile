@@ -1,5 +1,9 @@
-FROM       node:9.11-alpine
-MAINTAINER Sander Bel <sander@intelliops.be>
+FROM       node:10.11-alpine
+LABEL      maintainer="Sander Bel <sander@intelliops.be>"
+
+ARG        CRONICLE_VERSION='0.8.28'
+
+ARG        IS_MASTER
 
 # Docker defaults
 ENV        CRONICLE_base_app_url 'http://localhost:3012'
@@ -12,9 +16,11 @@ ENV        CRONICLE_socker_io_transports '["polling", "websocket"]'
 
 WORKDIR    /opt/cronicle/
 
-RUN        apk add --update curl && rm -rf /var/cache/apk/*
+RUN        apk add --no-cache git curl wget perl bash perl-pathtools tar procps
 
-RUN        curl -s https://raw.githubusercontent.com/jhuckaby/Cronicle/master/bin/install.js | node
+RUN        curl -L "https://github.com/jhuckaby/Cronicle/archive/v${CRONICLE_VERSION}.tar.gz" | tar zxvf - --strip-components 1 && \
+           npm install && \
+           node bin/build.js dist
 
 ADD        entrypoint.sh /entrypoint.sh
 
@@ -23,4 +29,4 @@ EXPOSE     3012
 # data volume is also configured in entrypoint.sh
 VOLUME     ["/opt/cronicle/data", "/opt/cronicle/logs", "/opt/cronicle/plugins"]
 
-CMD        ["sh", "/entrypoint.sh"]
+CMD sh /entrypoint.sh $IS_MASTER

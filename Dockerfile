@@ -3,6 +3,8 @@ LABEL      maintainer="Sander Bel <sander@intelliops.be>"
 
 ARG        CRONICLE_VERSION='0.8.28'
 
+ARG        IS_MASTER
+
 # Docker defaults
 ENV        CRONICLE_base_app_url 'http://localhost:3012'
 ENV        CRONICLE_WebServer__http_port 3012
@@ -27,4 +29,4 @@ EXPOSE     3012
 # data volume is also configured in entrypoint.sh
 VOLUME     ["/opt/cronicle/data", "/opt/cronicle/logs", "/opt/cronicle/plugins"]
 
-CMD        ["sh", "/entrypoint.sh"]
+CMD sh /entrypoint.sh $IS_MASTER

@@ -1,7 +1,7 @@
-# docker-cronicle
+# cronicle-docker
 
 
-Docker stack/container for a Cronicle multi-server master/slave cluster
+Multi-server master and slave cluster with docker-stack for Cronicle job scheduling
 
 ## latest
 Latest version of Cronicle server based upon nodejs Docker image.
